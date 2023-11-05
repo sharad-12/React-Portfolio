@@ -17,7 +17,8 @@ app.get("/", (req, res) =>
 
 app.post("/sendMail", async (req, res) =>
 {
-    console.log(req.body);
+    try {
+        console.log(req.body);
     let responce = await sendMail(req.body);
     console.log('responce', responce);
     if (responce.status === 200) {
@@ -27,8 +28,8 @@ app.post("/sendMail", async (req, res) =>
             message:req.body.message,
             date:new Date()
         });
-        let responce=  await msg.save();
-        if(!responce)
+        let responce1 =  await msg.save();
+        if(!responce1)
         {
         return res.status(300).json({ message: 'data not stored' });
         }
@@ -36,6 +37,9 @@ app.post("/sendMail", async (req, res) =>
     }
     else {
         return res.status(300).json({ message: 'mail not sent' });
+    }
+    } catch (error) {
+        console.log('error',error)
     }
 })
 app.get('*',(req,res)=>
