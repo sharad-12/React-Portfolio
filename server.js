@@ -4,7 +4,7 @@ const app = express();
 const bp = require('body-parser');
 const port = process.env.PORT || 5500;
 const sendMail = require('./SendMail');
-
+const database = require('./database');
 app.use(bp.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('build'));
@@ -21,6 +21,17 @@ app.post("/sendMail", async (req, res) =>
     let responce = await sendMail(req.body);
     console.log('responce', responce);
     if (responce.status === 200) {
+        let msg =new database({
+            name:req.body.name,
+            email:req.body.email,
+            message:req.body.message,
+            date:new Date()
+        });
+        let responce=  await msg.save();
+        if(!responce)
+        {
+        return res.status(300).json({ message: 'data not stored' });
+        }
         return res.status(200).json({ message: 'Success' });
     }
     else {
